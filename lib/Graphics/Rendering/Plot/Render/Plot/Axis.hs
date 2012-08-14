@@ -44,6 +44,9 @@ import qualified Text.Printf as Printf
 import Prelude hiding(min,max)
 import qualified Prelude(max)
 
+import Data.Time.Clock.POSIX
+import Data.Time.Format
+
 -----------------------------------------------------------------------------
 
 moveTo :: Double -> Double -> C.Render ()
@@ -432,7 +435,7 @@ renderAxisTick pc to x y w h sc min max xa sd tf t gl (p,l,v) = do
                             (Side _)  -> True
                             (Value _) -> False
        when (t == Major && majlab) $ do
-            let s = if sc == Log then formatTick "10e%.1g" v else formatTick tf v
+            let s = if sc == Log then formatTick (FormatString "10e%.1g") v else formatTick tf v
             lo <- pango $ P.layoutText pc s
             setTextOptions (scaleFontSize tickLabelScale to) lo
             case xa of 
@@ -458,13 +461,17 @@ renderAxisTick pc to x y w h sc min max xa sd tf t gl (p,l,v) = do
 
 -----------------------------------------------------------------------------
 
-formatTick :: String -> Double -> String
-formatTick tf p
+formatTick :: TickFormat -> Double -> String
+formatTick (FormatString tf) p
     | tf /= ""      = Printf.printf tf p 
     | p == 0.0      = "0"
     | abs p > 1000  = Printf.printf "%1.1e" p
     | abs p < 0.001 = Printf.printf "%.3e" p
     | otherwise     = Printf.printf "%.2f" p
+formatTick (Time offset mul locale tf) p
+    | tf == ""      = formatTick (FormatString tf) $ p * mul + offset
+    | otherwise     = let utctime = posixSecondsToUTCTime $ fromIntegral $ round $ p * mul + offset
+                      in formatTime locale tf utctime
 -- %g uses "whichever of %f, %e is smaller
 
 -----------------------------------------------------------------------------

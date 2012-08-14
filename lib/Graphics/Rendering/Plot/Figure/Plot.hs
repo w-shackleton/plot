@@ -69,6 +69,8 @@ module Graphics.Rendering.Plot.Figure.Plot (
                                            , AX.setTicks
                                            , AX.setGridlines
                                            , AX.setTickLabelFormat
+                                           , AX.setTickLabelTimeFormat
+                                           , AX.setTickLabelTimeFormat'
                                            , AX.withAxisLabel
                                            , AX.withAxisLine
                                            , AX.withGridLine

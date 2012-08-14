@@ -166,7 +166,7 @@ defaultMajorTicks :: Ticks
 defaultMajorTicks = Ticks NoLine (Left 5)
 
 defaultTickFormat :: TickFormat
-defaultTickFormat = ""
+defaultTickFormat = FormatString ""
 
 defaultAxis :: AxisType -> AxisPosn -> AxisData
 defaultAxis at axp = Axis at axp defaultLineType defaultMinorTicks defaultMajorTicks

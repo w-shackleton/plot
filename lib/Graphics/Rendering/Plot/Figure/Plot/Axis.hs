@@ -19,6 +19,8 @@ module Graphics.Rendering.Plot.Figure.Plot.Axis (
                                                 , setTicks
                                                 , setGridlines
                                                 , setTickLabelFormat
+                                                , setTickLabelTimeFormat
+                                                , setTickLabelTimeFormat'
                                                 , withAxisLabel
                                                 , withAxisLine
                                                 , withGridLine
@@ -31,6 +33,8 @@ import Control.Monad.Reader
 
 import Graphics.Rendering.Plot.Types
 import Graphics.Rendering.Plot.Defaults
+
+import System.Locale
 
 -----------------------------------------------------------------------------
 
@@ -87,7 +91,16 @@ setGridlines Major gl = modify $ \s -> changeMajorTicks (setTickGridlines (if gl
 
 -- | printf format that takes one argument, the tick value
 setTickLabelFormat :: String -> Axis ()
-setTickLabelFormat tf = modify $ \s -> changeTickFormat tf s
+setTickLabelFormat tf = modify $ \s -> changeTickFormat (FormatString tf) s
+
+-- | Data.Time.Format.formatTime compatible string, assuming the axis is describing time in seconds since unix epoch
+setTickLabelTimeFormat :: String -> Axis ()
+setTickLabelTimeFormat tf = modify $ \s -> changeTickFormat (Time 0 1 defaultTimeLocale tf) s
+
+-- | Data.Time.Format.formatTime compatible string, assuming the axis is describing time in seconds since unix epoch
+-- | It also takes an offset and a multiplier, which are applied to the unix time before formatting
+setTickLabelTimeFormat' :: String -> Double -> Double -> TimeLocale -> Axis ()
+setTickLabelTimeFormat' tf offset mul locale = modify $ \s -> changeTickFormat (Time offset mul locale tf) s
 
 -- | operate on the axis label
 withAxisLabel :: Text () -> Axis ()

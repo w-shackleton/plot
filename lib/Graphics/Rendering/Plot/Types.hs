@@ -37,6 +37,8 @@ import Control.Monad.Reader
 
 import Control.Monad.Supply
 
+import System.Locale
+
 -----------------------------------------------------------------------------
 -----------------------------------------------------------------------------
 -----------------------------------------------------------------------------
@@ -191,7 +193,13 @@ setTickGridlines gl (Ticks _ tv) = Ticks gl tv
 setTickValues :: TickValues -> Ticks -> Ticks
 setTickValues tv (Ticks gl _) = Ticks gl tv
 
-type TickFormat = String
+data TickFormat = FormatString String
+                | Time {
+                    tickTimeOffset :: Double, -- Offset from unix epoch
+                    tickTimeMultiplier :: Double, -- Multiplier - if measured in seconds, this would be 1
+                    tickTimeLocale :: TimeLocale,
+                    tickTimeFormat :: String -- Format string, to be used with Data.Time.Format.formatTime once the time has been converted to a UTCTime
+                }
 
 data AxisData = Axis {
                   _axis_type     :: AxisType
